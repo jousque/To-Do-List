@@ -11,17 +11,32 @@
           placeholder="Add a task"
         />
         <button
-          class="flex-no-shrink p-2 border-2 rounded text-teal bg-teal hover:text-2c3f50 hover:bg-teal"
-          type="submit"
+          class="flex-no-shrink p-2 border-2 rounded text-teal bg-teal hover:text-2c3f50 hover:bg-teal mr-2"
+          type="button"
+          v-on:click="addTask"
         >
-          Add
+        <vue-feather type="plus"></vue-feather>
+        </button>
+        <button
+          class="flex-no-shrink p-2 border-2 rounded text-teal bg-teal hover:text-2c3f50 hover:bg-teal"
+          type="button"
+          v-on:click="toggleSearch"
+        >
+          <vue-feather v-if="!searchVisible" type="search"></vue-feather>
+          <vue-feather v-else type="search"></vue-feather>
         </button>
       </form>
+      <input
+        v-if="searchVisible"
+        class="shadow appearance-none border rounded w-full py-2 px-3 mr-2 text-white bg-34495e mt-4"
+        v-model="searchTerm"
+        placeholder="Search a task"
+      />
     </div>
     <div class="tasks-scrollable" ref="tasksContainerRef">
       <div
         class="border-b border-34495e py-2 flex items-center justify-between"
-        v-for="(task, index) in tasks"
+        v-for="(task, index) in filteredTasks"
         :key="task.title"
         ref="taskItem"
       >
@@ -30,7 +45,6 @@
             <input
               type="checkbox"
               :id="'checkbox' + index"
-              checked
               v-on:click="completeTask(index)"
             />
             <label :for="'checkbox' + index"></label>
@@ -47,7 +61,7 @@
               v-else
               type="text"
               v-model="editedTask"
-              class="w-11/12 shadow appearance-none border rounded py-2 px-3 mr-2 text-white bg-34495e"
+              class="w-11/12 shadow appearance-none border rounded py-2 px-3 mr-12 text-white bg-34495e"
               :class="{ 'line-through': task.completed }"
             />
           </div>
@@ -141,14 +155,31 @@
 </template>
 
 <script setup>
-import { ref, onMounted, nextTick } from "vue";
+import { ref, computed, onMounted, nextTick } from "vue";
 import Sortable from "sortablejs";
+import VueFeather from "vue-feather";
 
 const tasks = ref([]);
 const completedTasks = ref([]);
 const newTask = ref("");
 const showModal = ref(false);
 const editedTask = ref("");
+const searchTerm = ref("");
+const searchVisible = ref(false);
+
+function toggleSearch() {
+  searchVisible.value = !searchVisible.value;
+  if (searchVisible.value) {
+    searchTerm.value = "";
+  }
+}
+
+const filteredTasks = computed(() => {
+  if (!searchTerm.value) return tasks.value;
+  return tasks.value.filter((task) =>
+    task.title.toLowerCase().includes(searchTerm.value.toLowerCase())
+  );
+});
 
 const sortableOptions = {
   animation: 150,

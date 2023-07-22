@@ -9,10 +9,13 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "feather-icons": "^4.29.0",
     "sortablejs": "^1.15.0",
     "vue": "^3.3.4",
     "vue-draggable-next": "^2.2.1",
+    "vue-feather": "^2.0.0",
     "vue-router": "^4.2.4",
+    "vue3-icon": "^2.1.0",
     "vuedraggable": "^2.24.3",
     "vuex": "^4.1.0"
   },
